@@ -1,0 +1,6 @@
+stayPointCount
+stayPointDuration
+#stayPointSignature
+stayPointUniqueEntropy
+stayPointGeneralEntropy
+stayPointInterVisitTime
