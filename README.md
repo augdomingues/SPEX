@@ -25,13 +25,13 @@ optional arguments:
 ## Usage examples
 
 python spex.py my_trace.csv my_output_folder/ --action extract_both
-(Extract the stay points and the metrics from the my_trace.csv file and store the stay points in the my_output_folder, using the default values of time threshold (30 minutes), radius threshold (500 meters) and distance function (haversine)
+- (Extract the stay points and the metrics from the my_trace.csv file and store the stay points in the my_output_folder, using the default values of time threshold (30 minutes), radius threshold (500 meters) and distance function (haversine)
 
 python spex.py my_trace.csv my_output_folder/ --action extract_metrics
-(Extract only the metrics)
+- (Extract only the metrics)
 
 python spex.py my_trace.csv my_output_folder/ --action extract_points -t 60 -d euclidean -r 1000
-(Extracts only the stay points and sets specific values for time, radius and distance function)
+- (Extracts only the stay points and sets specific values for time, radius and distance function)
 
 
 
