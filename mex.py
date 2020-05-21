@@ -38,8 +38,9 @@ class mex:
             metric_class = getattr(metric_class, m)
             metric_class = getattr(metric_class, m)
 
-            obj = metric_class(self.out_folder, self.metrics_output_folder)
             print("Running metric {}.".format(m))
+            obj = metric_class(self.out_folder, self.metrics_output_folder,
+                               self.d)
             obj.extract()
             obj.save()
             obj.report()

@@ -8,7 +8,7 @@ from Metrics.reporter import reporter
 
 class stayPointCount:
 
-    def __init__(self, folder, output_folder):
+    def __init__(self, folder, output_folder, *args):
         self.folder = folder
         self.fnames = [f for f in listdir(folder) if isfile(join(folder, f))]
         self.output_file = join(output_folder, "stayPointCount")

@@ -1,37 +1,40 @@
 from os import listdir
 from os.path import isfile, join
 from datetime import datetime
+from collections import defaultdict
 from math import log
 import pandas as pd
 from haversine import haversine
 from Metrics.reporter import reporter
 
-SIMILARITY_RADIUS = .05
+SIMILARITY_RADIUS = .1
 
-class stayPointUniqueEntropy:
+
+class stayPointGraph:
 
     def __init__(self, folder, output_folder, *args):
         self.folder = folder
         self.fnames = [f for f in listdir(folder) if isfile(join(folder, f))]
-        self.output_file = join(output_folder, "stayPointUniqueEntropy")
+        self.output_file = join(output_folder, "stayPointGraph")
         self.output_folder = output_folder
         self.dist_func = args[0]
 
     def extract(self):
-        default_time = 1391212800  # Only appliable to Rome
-        counts = []
-        entropies = []
+        visits = {}
+        locs = {}
         for fname in self.fnames:
+            username = fname.replace("stay_points", "").replace(".csv", "").replace("_", "")
+            visits[username] = dict()
             df = pd.read_csv(join(self.folder, fname))
-            locs = {}
             for tup in df.itertuples():
                 point = (tup.latitude, tup.longitude)
-                locs = self.__find_similar(locs, point)
-            counts += [item[1] for item in locs.values()]
-            if locs:
-                entropies.append(self.__extract_entropy(locs))
-        self.entropies = entropies
-        return counts, entropies
+                locs, ck = self.__find_similar(locs, point)
+                if ck not in visits[username]:
+                    visits[username][ck] = 0
+                visits[username][ck] += 1
+        self.visits = visits
+        self.locations = locs
+        return visits
 
     def __dist_func(self, a, b):
         if self.dist_func == "euclidean":
@@ -52,32 +55,25 @@ class stayPointUniqueEntropy:
                     new_x = (point[0] + item_loc[0])/2
                     new_y = (point[1] + item_loc[1])/2
                     locations[key] = [(new_x, new_y), item_count + 1]
+                    current_key = key
                     found = True
                     break
             if not found:
                 locations[current_key] = [point, 1]
-        return locations
+        return locations, current_key
 
-    def __extract_entropy(self, locations):
-        total = sum([item[1] for item in locations.values()])
-        entropy = 0
-        for v in locations.values():
-            prob_v = v[1]/total
-            entropy += prob_v*log(1/prob_v, 2)
-
-        num_loc = len(locations)
-        prob_uniform = 1/num_loc
-        entropy_max = num_loc * (prob_uniform)*log(1/prob_uniform, 2)
-        entropy_max = round(entropy_max, 2)
-        entropy = round(entropy, 2)
-        if entropy > entropy_max:
-            print("Entropy max is {}, entropy is {}".format(entropy_max, entropy))
-        return entropy/max(entropy_max, 1)
 
     def save(self):
-        with open(self.output_file, "w+") as out:
-            for c in self.entropies:
-                out.write("{}\n".format(c))
+        with open(self.output_file + "_locs", "w+") as out:
+            out.write("locid,latitude,longitude,count\n")
+            for key, v in self.locations.items():
+                out.write("{},{},{},{}\n".format(key, v[0][0], v[0][1], v[1]))
+
+        with open(self.output_file + "_visits", "w+") as out:
+            out.write("userid,locid,count\n")
+            for key, value in self.visits.items():
+                for loc, count in value.items():
+                    out.write("{},{},{}\n".format(key, loc, count))
 
     def report(self):
-        reporter("stayPointUniqueEntropy", self.output_folder, self.entropies)
+        pass

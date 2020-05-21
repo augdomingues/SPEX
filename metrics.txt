@@ -1,6 +1,7 @@
+stayPointGraph
 stayPointCount
 stayPointDuration
 #stayPointSignature
 stayPointUniqueEntropy
-stayPointGeneralEntropy
+#stayPointGeneralEntropy
 stayPointInterVisitTime

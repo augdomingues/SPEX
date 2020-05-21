@@ -10,13 +10,12 @@ SIMILARITY_RADIUS = .1
 
 class stayPointGeneralEntropy:
 
-    def __init__(self, folder, output_folder):
+    def __init__(self, folder, output_folder, *args):
         self.folder = folder
         self.fnames = [f for f in listdir(folder) if isfile(join(folder, f))]
         self.output_file = join(output_folder, "stayPointGeneralEntropy")
         self.output_folder = output_folder
-
-        self.graph = nx.DiGraph()
+        self.dist_func = args[0]
 
 
     def extract(self):
@@ -31,6 +30,12 @@ class stayPointGeneralEntropy:
         self.entropies = entropies
         return entropies
 
+    def __dist_func(self, a, b):
+        if self.dist_func == "euclidean":
+            return pow(pow(a[0] - b[0], 2) + pow(a[1] - b[1], 2), 1/2)
+        elif self.dist_func == "haversine":
+            return haversine(a, b)
+
     def __find_similar(self, locations, point):
         current_key = len(locations)
         found = False
@@ -40,7 +45,7 @@ class stayPointGeneralEntropy:
             for key, item in locations.items():
                 item_loc = item[0]
                 item_count = item[1]
-                if haversine(point, item_loc) <= SIMILARITY_RADIUS:
+                if self.__dist_func(point, item_loc) <= SIMILARITY_RADIUS:
                     new_x = (point[0] + item_loc[0])/2
                     new_y = (point[1] + item_loc[1])/2
                     locations[key] = [(new_x, new_y), item_count + 1]
