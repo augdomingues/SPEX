@@ -96,7 +96,7 @@ class spex:
             point_j = self.__get_point(j)
             while j < point_num:
                 point_j = self.__get_point(j)
-                d = self.__dist(point_i, point_j) * 1000
+                d = self.__dist(point_i, point_j)
                 if d > self.t:
                     delta_t = data.loc[j, "time"] - data.loc[i, "time"]
                     if delta_t > time_in_sec:
