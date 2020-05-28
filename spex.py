@@ -97,7 +97,7 @@ class spex:
             while j < point_num:
                 point_j = self.__get_point(j)
                 d = self.__dist(point_i, point_j)
-                if d > self.t:
+                if d > self.r:
                     delta_t = data.loc[j, "time"] - data.loc[i, "time"]
                     if delta_t > time_in_sec:
                         sp = stayPoint(Lat=data.loc[i:(j+1), "latitude"].mean(),
